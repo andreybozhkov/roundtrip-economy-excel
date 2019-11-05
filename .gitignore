@@ -87,5 +87,7 @@ typings/
 # DynamoDB Local files
 .dynamodb/
 
-# Initially provided data in excel sheets
-data/initial
+# data
+data
+*.xls
+*.xlsx
