@@ -22,37 +22,36 @@ function generateProjectsList (shipments) {
     }
 }
 
-generateProjectsList(shipmentsJSON);
-
-function addNewRoundTrip (importProject, exportProject) {
-    let newRoundTrip = {...importProject};
-    newRoundTrip['Export ID'] = exportProject.ID;
-    newRoundTrip['Export Trailer'] = exportProject.Trailer;
-    newRoundTrip['Export Project Reporting Date'] = exportProject['Project Reporting Date'];
-    newRoundTrip['Export Start Date'] = exportProject['Start Date'];
-    newRoundTrip['Export End Date'] = exportProject['End Date'];
-    newRoundTrip['Export Traffic Line Group'] = exportProject['Traffic Line Group'];
-    newRoundTrip['Export Traffic Line'] = exportProject['Traffic Line'];
-    newRoundTrip['Export Estimated Net Profit'] = exportProject['Estimated Net Profit'];
-    newRoundTrip['Export Net Profit'] = exportProject['Net Profit'];
-    newRoundTrip['Export Customer Companies from Shipments'] = exportProject['Customer Companies from Shipments'];
-    reportJSON.push(newRoundTrip);
+function addNewShipment (shipment, project, firstShipment) {
+    let newShipment = {...shipment};
+    if (firstShipment) {
+        newShipment['Project Estimated Cost'] = project['Project Estimated Cost'];
+    }
+    else {
+        newShipment['Project Estimated Cost'] = 0;
+    }
+    newShipment['Project Estimated Cost Currency'] = project['Project Estimated Cost Currency'];
+    reportJSON.push(newShipment);
 }
 
-for (importProject of shipmentsJSON) {
-    for (exportProject of projectsEstimatesJSON) {
-        if (exportProject.Trailer === importProject.Trailer && exportProject['Start Date'] > importProject['Start Date']) {
-            addNewRoundTrip(importProject, exportProject);
-            break;
+generateProjectsList(shipmentsJSON);
+
+for (uniqueProject of projectsList) {
+    let firstShipment = true;
+    for (shipment of shipmentsJSON) {
+        if (shipment['Project ID'] === uniqueProject) {
+            let project = projectsEstimatesJSON.find(project => project['Project ID'] === uniqueProject);
+            addNewShipment(shipment, project, firstShipment);
+            firstShipment = false;
         }
     }
 }
 
 let reportWorksheet = XLSX.utils.json_to_sheet(reportJSON, {
-    cellDates: false
+   cellDates: false
 });
 
 let newWorkbook = XLSX.utils.book_new();
 XLSX.utils.book_append_sheet(newWorkbook, reportWorksheet, 'data');
 
-XLSX.writeFile(newWorkbook, 'report.xlsx');
+XLSX.writeFile(newWorkbook, './data/NTG Multimodal prices Italy to Sweden.xlsx');
