@@ -7,10 +7,10 @@ let readOptions = {
     cellDates: false
 };
 
-let workbookImport = XLSX.readFile('./data/initial/import-projects-0.xls', readOptions);
-let importJSON = XLSX.utils.sheet_to_json(workbookImport.Sheets['Import_clean']);
-let workbookExport = XLSX.readFile('./data/initial/export-projects-0.xls', readOptions);
-let exportJSON = XLSX.utils.sheet_to_json(workbookExport.Sheets['Export_clean']);
+let workBookShipments = XLSX.readFile('./data/initial/NTG Multimodal costs/shipments_Italy_to_Sweden.xls', readOptions);
+let shipmentsJSON = XLSX.utils.sheet_to_json(workBookShipments.Sheets['shipments']);
+let workBookProjectsEstimates = XLSX.readFile('./data/initial/NTG Multimodal costs/estimates_projects.xls', readOptions);
+let projectsEstimatesJSON = XLSX.utils.sheet_to_json(workBookProjectsEstimates.Sheets['projects_estimates']);
 let reportJSON = [];
 
 function addNewRoundTrip (importProject, exportProject) {
@@ -28,8 +28,8 @@ function addNewRoundTrip (importProject, exportProject) {
     reportJSON.push(newRoundTrip);
 }
 
-for (importProject of importJSON) {
-    for (exportProject of exportJSON) {
+for (importProject of shipmentsJSON) {
+    for (exportProject of projectsEstimatesJSON) {
         if (exportProject.Trailer === importProject.Trailer && exportProject['Start Date'] > importProject['Start Date']) {
             addNewRoundTrip(importProject, exportProject);
             break;
