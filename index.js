@@ -31,6 +31,10 @@ function addNewShipment (shipment, project, firstShipment) {
         newShipment['Project Estimated Cost'] = 0;
     }
     newShipment['Project Estimated Cost Currency'] = project['Project Estimated Cost Currency'];
+    
+    newShipment['Load Area'] = 'IT-' + shipment['Load ZIP'].substr(0, 2);
+    newShipment['Delivery Area'] = 'SE-' + shipment['Delivery ZIP'].substr(0, 2);
+
     reportJSON.push(newShipment);
 }
 
