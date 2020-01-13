@@ -12,6 +12,17 @@ let shipmentsJSON = XLSX.utils.sheet_to_json(workBookShipments.Sheets['shipments
 let workBookProjectsEstimates = XLSX.readFile('./data/initial/NTG Multimodal costs/estimates_projects.xls', readOptions);
 let projectsEstimatesJSON = XLSX.utils.sheet_to_json(workBookProjectsEstimates.Sheets['projects_estimates']);
 let reportJSON = [];
+let projectsList = [];
+
+function generateProjectsList (shipments) {
+    for (shipment of shipments) {
+        if (!projectsList.includes(shipment['Project ID'])) {
+            projectsList.push(shipment['Project ID']);
+        }
+    }
+}
+
+generateProjectsList(shipmentsJSON);
 
 function addNewRoundTrip (importProject, exportProject) {
     let newRoundTrip = {...importProject};
