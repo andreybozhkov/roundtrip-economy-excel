@@ -15,25 +15,25 @@ let workbookProjects = XLSX.readFile('./data/initial/Holmen Paper/2019-11 and 12
 let projectsJSON = XLSX.utils.sheet_to_json(workbookProjects.Sheets['projects']);
 let reportJSON = [];
 
-function addNewRoundTrip (importProject, exportProject) {
-    let newRoundTrip = {...importProject};
-    newRoundTrip['Export ID'] = exportProject.ID;
-    newRoundTrip['Export Trailer'] = exportProject.Trailer;
-    newRoundTrip['Export Project Reporting Date'] = exportProject['Project Reporting Date'];
-    newRoundTrip['Export Start Date'] = exportProject['Start Date'];
-    newRoundTrip['Export End Date'] = exportProject['End Date'];
-    newRoundTrip['Export Traffic Line Group'] = exportProject['Traffic Line Group'];
-    newRoundTrip['Export Traffic Line'] = exportProject['Traffic Line'];
-    newRoundTrip['Export Estimated Net Profit'] = exportProject['Estimated Net Profit'];
-    newRoundTrip['Export Net Profit'] = exportProject['Net Profit'];
-    newRoundTrip['Export Customer Companies from Shipments'] = exportProject['Customer Companies from Shipments'];
+function addNewRoundTrip (customerRefLine, shipment) {
+    let newRoundTrip = {...customerRefLine};
+    newRoundTrip['Export ID'] = shipment.ID;
+    newRoundTrip['Export Trailer'] = shipment.Trailer;
+    newRoundTrip['Export Project Reporting Date'] = shipment['Project Reporting Date'];
+    newRoundTrip['Export Start Date'] = shipment['Start Date'];
+    newRoundTrip['Export End Date'] = shipment['End Date'];
+    newRoundTrip['Export Traffic Line Group'] = shipment['Traffic Line Group'];
+    newRoundTrip['Export Traffic Line'] = shipment['Traffic Line'];
+    newRoundTrip['Export Estimated Net Profit'] = shipment['Estimated Net Profit'];
+    newRoundTrip['Export Net Profit'] = shipment['Net Profit'];
+    newRoundTrip['Export Customer Companies from Shipments'] = shipment['Customer Companies from Shipments'];
     reportJSON.push(newRoundTrip);
 }
 
-for (importProject of customerRefsJSON) {
-    for (exportProject of shipmentsJSON) {
-        if (exportProject.Trailer === importProject.Trailer && exportProject['Start Date'] > importProject['Start Date']) {
-            addNewRoundTrip(importProject, exportProject);
+for (customerRefLine of customerRefsJSON) {
+    for (shipment of shipmentsJSON) {
+        if (shipment.Trailer === customerRefLine.Trailer && shipment['Start Date'] > customerRefLine['Start Date']) {
+            addNewRoundTrip(customerRefLine, shipment);
             break;
         }
     }
