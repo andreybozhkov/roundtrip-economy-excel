@@ -15,29 +15,66 @@ let workbookProjects = XLSX.readFile('./data/initial/Holmen Paper/2019-11 and 12
 let projectsJSON = XLSX.utils.sheet_to_json(workbookProjects.Sheets['projects']);
 let reportJSON = [];
 
-function addNewRoundTrip (customerRefLine, shipment) {
-    let newRoundTrip = {...customerRefLine};
-    newRoundTrip['Export ID'] = shipment.ID;
-    newRoundTrip['Export Trailer'] = shipment.Trailer;
-    newRoundTrip['Export Project Reporting Date'] = shipment['Project Reporting Date'];
-    newRoundTrip['Export Start Date'] = shipment['Start Date'];
-    newRoundTrip['Export End Date'] = shipment['End Date'];
-    newRoundTrip['Export Traffic Line Group'] = shipment['Traffic Line Group'];
-    newRoundTrip['Export Traffic Line'] = shipment['Traffic Line'];
-    newRoundTrip['Export Estimated Net Profit'] = shipment['Estimated Net Profit'];
-    newRoundTrip['Export Net Profit'] = shipment['Net Profit'];
-    newRoundTrip['Export Customer Companies from Shipments'] = shipment['Customer Companies from Shipments'];
-    reportJSON.push(newRoundTrip);
+let errorLog = [];
+
+function findShipment (customerRef) {
+    let foundShipment = shipmentsJSON.find(shipment => shipment['Reference'] === customerRef);
+    if (foundShipment === undefined) {
+        let errorMsg = {
+            'returnType': 'Error',
+            'errorName': 'Shipment with this customer reference not found',
+            'customerReference': customerRef
+        };
+        errorLog.push(errorMsg);
+        return errorMsg;
+    }
+    else return foundShipment;
+}
+
+function findProject (shipmentProjectID) {
+    let foundProject = projectsJSON.find(project => project.ID === shipmentProjectID);
+    if (foundProject === undefined) {
+        let errorMsg = {
+            'returnType': 'Error',
+            'errorName': 'Project with given ID not found',
+            'projectID': shipmentProjectID
+        };
+        errorLog.push(errorMsg);
+        return errorMsg;
+    }
+    else return foundProject;
+}
+
+function addNewEdgeProtectorLine (customerRefLine, shipment, project) {
+    let newEdgeProtectorLine = {...customerRefLine};
+    newEdgeProtectorLine['Project'] = project.ID;
+    newEdgeProtectorLine['Haulier'] = shipment['Pickup Carrier Name'];
+    newEdgeProtectorLine['Trailer nr'] = project['Trailer'];
+    newEdgeProtectorLine['Invoice nr'] = '';
+    newEdgeProtectorLine['Credit Note nr'] = '';
+    newEdgeProtectorLine['Project Status'] = project['Status'];
+    newEdgeProtectorLine['Replacement Project'] = 2044801;
+    newEdgeProtectorLine['Notes'] = '';
+    reportJSON.push(newEdgeProtectorLine);
 }
 
 for (customerRefLine of customerRefsJSON) {
-    for (shipment of shipmentsJSON) {
-        if (shipment.Trailer === customerRefLine.Trailer && shipment['Start Date'] > customerRefLine['Start Date']) {
-            addNewRoundTrip(customerRefLine, shipment);
-            break;
-        }
+    let foundShipment = findShipment(customerRefLine['Transport Booking']);
+    if (foundShipment.returnType === 'Error') {
+        console.log(foundShipment);
+        continue;
     }
+
+    let foundProject = findProject(foundShipment['Project ID'])
+    if (foundProject.returnType === 'Error') {
+        console.log(foundProject);
+        continue;
+    }
+    
+    addNewEdgeProtectorLine(customerRefLine, foundShipment, foundProject);
 }
+
+console.log(errorLog);
 
 let reportWorksheet = XLSX.utils.json_to_sheet(reportJSON, {
     cellDates: false
