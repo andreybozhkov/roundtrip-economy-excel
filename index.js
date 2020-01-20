@@ -7,10 +7,12 @@ let readOptions = {
     cellDates: false
 };
 
-let workbookImport = XLSX.readFile('./data/initial/Vitamin Well/import-projects-0.xls', readOptions);
-let importJSON = XLSX.utils.sheet_to_json(workbookImport.Sheets['Import_clean']);
-let workbookExport = XLSX.readFile('./data/initial/Vitamin Well/export-projects-0.xls', readOptions);
-let exportJSON = XLSX.utils.sheet_to_json(workbookExport.Sheets['Export_clean']);
+let workbookCustomerReferences = XLSX.readFile('./data/initial/Holmen Paper/2019-11 and 12/edge_protectors_2019_11_and_12.xlsx', readOptions);
+let customerRefsJSON = XLSX.utils.sheet_to_json(workbookCustomerReferences.Sheets['edge_protectors']);
+let workbookShipments = XLSX.readFile('./data/initial/Holmen Paper/2019-11 and 12/shipments.xls', readOptions);
+let shipmentsJSON = XLSX.utils.sheet_to_json(workbookShipments.Sheets['shipments']);
+let workbookProjects = XLSX.readFile('./data/initial/Holmen Paper/2019-11 and 12/projects.xls', readOptions);
+let projectsJSON = XLSX.utils.sheet_to_json(workbookProjects.Sheets['projects']);
 let reportJSON = [];
 
 function addNewRoundTrip (importProject, exportProject) {
@@ -28,8 +30,8 @@ function addNewRoundTrip (importProject, exportProject) {
     reportJSON.push(newRoundTrip);
 }
 
-for (importProject of importJSON) {
-    for (exportProject of exportJSON) {
+for (importProject of customerRefsJSON) {
+    for (exportProject of shipmentsJSON) {
         if (exportProject.Trailer === importProject.Trailer && exportProject['Start Date'] > importProject['Start Date']) {
             addNewRoundTrip(importProject, exportProject);
             break;
