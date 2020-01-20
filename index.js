@@ -44,4 +44,4 @@ let reportWorksheet = XLSX.utils.json_to_sheet(reportJSON, {
 let newWorkbook = XLSX.utils.book_new();
 XLSX.utils.book_append_sheet(newWorkbook, reportWorksheet, 'data');
 
-XLSX.writeFile(newWorkbook, './data/Vitamin Well report.xlsx');
+XLSX.writeFile(newWorkbook, './data/Holmen Paper report.xlsx');
