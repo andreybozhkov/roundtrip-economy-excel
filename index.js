@@ -13,9 +13,11 @@ let workbookInvoiceLines = XLSX.readFile('./data/initial/Granngarden AB/Granngar
 let linesJSON = XLSX.utils.sheet_to_json(workbookInvoiceLines.Sheets['Sheet']);
 let reportJSON = [];
 let lineTypes = [];
+let currencies = [];
 
 function addNewShipmentWithRevenue (shipment, invoiceLines) {
     checkAndAddLineTypes(invoiceLines);
+    checkAndAddCurrencyTypes(invoiceLines);
 
     let newShipmentWithRevenue = {...shipment};
     newShipmentWithRevenue['Invoice Nr'] = invoiceLines[0]['Invoice Number'];
@@ -46,6 +48,14 @@ function checkAndAddLineTypes (linesInvoice) {
                 'Article Name': articleName
             }
             lineTypes.push(newLineType);
+        }
+    }
+}
+
+function checkAndAddCurrencyTypes (linesInvoice) {
+    for (line of linesInvoice) {
+        if (!currencies.includes(line['Currency'])) {
+            currencies.push(line['Currency']);
         }
     }
 }
