@@ -9,7 +9,7 @@ let readOptions = {
 
 let workbookShipments = XLSX.readFile('./data/initial/Granngarden AB/Granngarden shipments 2019.xls', readOptions);
 let shipmentsJSON = XLSX.utils.sheet_to_json(workbookShipments.Sheets['Sheet']);
-let workbookInvoiceLines = XLSX.readFile('./data/initial/Granngarden AB/Granngarden lines 2019.xls', readOptions);
+let workbookInvoiceLines = XLSX.readFile('./data/initial/Granngarden AB/Granngarden lines 2019.xlsx', readOptions);
 let linesJSON = XLSX.utils.sheet_to_json(workbookInvoiceLines.Sheets['Sheet']);
 let reportJSON = [];
 let lineTypes = [];
@@ -18,8 +18,10 @@ function addNewShipmentWithRevenue (shipment, invoiceLines) {
     checkAndAddLineTypes(invoiceLines);
 
     let newShipmentWithRevenue = {...shipment};
+    newShipmentWithRevenue['Invoice Nr'] = invoiceLines[0]['Invoice Number'];
     for (lineType of lineTypes) {
         let foundLineInvoiceByType = invoiceLines.find(l => l['Article Code'] === lineType['Article Code']);
+        if (foundLineInvoiceByType == undefined) continue;
         let articleName = lineType['Article Name'];
         let netSum = foundLineInvoiceByType['Net Sum'];
         let currency = foundLineInvoiceByType['Currency'];
@@ -49,9 +51,9 @@ function checkAndAddLineTypes (linesInvoice) {
 }
 
 for (shipment of shipmentsJSON) {
-    let foundLines = linesJSON.filter(line => line['Shipment ID'] === shipment.ID);
+    let foundLines = linesJSON.filter(line => line['Shipment ID'] === shipment['Shipment ID']);
     if (foundLines.length === 0) {
-        console.log(`No invoice lines found for shipment ${shipment.ID}!`);
+        console.log(`No invoice lines found for shipment ${shipment['Shipment ID']}!`);
         break;
     }
 
