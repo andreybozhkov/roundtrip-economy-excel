@@ -12,11 +12,40 @@ let shipmentsJSON = XLSX.utils.sheet_to_json(workbookShipments.Sheets['Sheet']);
 let workbookInvoiceLines = XLSX.readFile('./data/initial/Granngarden AB/Granngarden lines 2019.xls', readOptions);
 let linesJSON = XLSX.utils.sheet_to_json(workbookInvoiceLines.Sheets['Sheet']);
 let reportJSON = [];
+let lineTypes = [];
 
-function addNewShipmentWithRevenue (shipment, lineInvoice) {
-    let newShipmentWithProjectProfit = {...shipment};
-    newShipmentWithProjectProfit['Project Estimated Profit'] = lineInvoice['Estimated Net Profit'];
-    reportJSON.push(newShipmentWithProjectProfit);
+function addNewShipmentWithRevenue (shipment, invoiceLines) {
+    checkAndAddLineTypes(invoiceLines);
+
+    let newShipmentWithRevenue = {...shipment};
+    for (lineType of lineTypes) {
+        let foundLineInvoiceByType = invoiceLines.find(l => l['Article Code'] === lineType['Article Code']);
+        let articleName = lineType['Article Name'];
+        let netSum = foundLineInvoiceByType['Net Sum'];
+        let currency = foundLineInvoiceByType['Currency'];
+        newShipmentWithRevenue[articleName] = netSum;
+        newShipmentWithRevenue[`${articleName} Currency`] = currency;
+    }
+    
+    reportJSON.push(newShipmentWithRevenue);
+}
+
+function checkAndAddLineTypes (linesInvoice) {
+    for (line of linesInvoice) {
+        if (lineTypes.findIndex(l => l['Article Code'] === line['Article Code']) === -1) {
+            let articleName = '';
+            if (line['Article Code'] === 'DTSPECIAL') {
+                articleName = 'Extra costs'
+            } else {
+                articleName = line['Article Name'];
+            }
+            let newLineType = {
+                'Article Code': line['Article Code'],
+                'Article Name': articleName
+            }
+            lineTypes.push(newLineType);
+        }
+    }
 }
 
 for (shipment of shipmentsJSON) {
@@ -26,13 +55,7 @@ for (shipment of shipmentsJSON) {
         break;
     }
 
-    
-    /*for (lineInvoice of linesJSON) {
-        if (shipment['ID'] === lineInvoice['Project ID']) {
-            addNewProjectProfit(shipment, lineInvoice);
-            break;
-        }
-    }*/
+    addNewShipmentWithRevenue(shipment, foundLines);
 }
 
 let reportWorksheet = XLSX.utils.json_to_sheet(reportJSON, {
