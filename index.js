@@ -7,22 +7,22 @@ let readOptions = {
     cellDates: false
 };
 
-let workbookShipments = XLSX.readFile('./data/initial/Zarges AB/shipments-2019-clean.xls', readOptions);
-let shipmentsJSON = XLSX.utils.sheet_to_json(workbookShipments.Sheets['shipment_data']);
-let workbookProjects = XLSX.readFile('./data/initial/Zarges AB/project-profit-export-clean.xls', readOptions);
-let projectsJSON = XLSX.utils.sheet_to_json(workbookProjects.Sheets['project_profit_data']);
+let workbookShipments = XLSX.readFile('./data/initial/Granngarden AB/Granngarden shipments 2019.xls', readOptions);
+let shipmentsJSON = XLSX.utils.sheet_to_json(workbookShipments.Sheets['Sheet']);
+let workbookInvoiceLines = XLSX.readFile('./data/initial/Granngarden AB/Granngarden lines 2019.xls', readOptions);
+let linesJSON = XLSX.utils.sheet_to_json(workbookInvoiceLines.Sheets['Sheet']);
 let reportJSON = [];
 
-function addNewProjectProfit (shipment, project) {
+function addNewShipmentWithRevenue (shipment, lineInvoice) {
     let newShipmentWithProjectProfit = {...shipment};
-    newShipmentWithProjectProfit['Project Estimated Profit'] = project['Estimated Net Profit'];
+    newShipmentWithProjectProfit['Project Estimated Profit'] = lineInvoice['Estimated Net Profit'];
     reportJSON.push(newShipmentWithProjectProfit);
 }
 
 for (shipment of shipmentsJSON) {
-    for (project of projectsJSON) {
-        if (shipment['Project ID'] === project['Project ID']) {
-            addNewProjectProfit(shipment, project);
+    for (lineInvoice of linesJSON) {
+        if (shipment['ID'] === lineInvoice['Project ID']) {
+            addNewProjectProfit(shipment, lineInvoice);
             break;
         }
     }
@@ -35,4 +35,4 @@ let reportWorksheet = XLSX.utils.json_to_sheet(reportJSON, {
 let newWorkbook = XLSX.utils.book_new();
 XLSX.utils.book_append_sheet(newWorkbook, reportWorksheet, 'data');
 
-XLSX.writeFile(newWorkbook, 'report.xlsx');
+XLSX.writeFile(newWorkbook, './data/Granngarden AB 2019 Shipments Reprot.xlsx');
