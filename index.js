@@ -21,6 +21,11 @@ function addNewShipmentWithRevenue (shipment, invoiceLines) {
 
     let newShipmentWithRevenue = {...shipment};
     newShipmentWithRevenue['Invoice Nr'] = invoiceLines[0]['Invoice Number'];
+
+    for (currency of currencies) {
+        newShipmentWithRevenue[`Total ${currency}`] = 0;
+    }
+
     for (lineType of lineTypes) {
         let foundLineInvoiceByType = invoiceLines.find(l => l['Article Code'] === lineType['Article Code']);
         if (foundLineInvoiceByType == undefined) continue;
@@ -29,7 +34,10 @@ function addNewShipmentWithRevenue (shipment, invoiceLines) {
         let currency = foundLineInvoiceByType['Currency'];
         newShipmentWithRevenue[articleName] = netSum;
         newShipmentWithRevenue[`${articleName} Currency`] = currency;
+        newShipmentWithRevenue[`Total ${currency}`] += netSum;
     }
+
+    if (newShipmentWithRevenue[`Total ${currency}`] === 0) delete newShipmentWithRevenue[`Total ${currency}`];
     
     reportJSON.push(newShipmentWithRevenue);
 }
@@ -77,4 +85,4 @@ let reportWorksheet = XLSX.utils.json_to_sheet(reportJSON, {
 let newWorkbook = XLSX.utils.book_new();
 XLSX.utils.book_append_sheet(newWorkbook, reportWorksheet, 'data');
 
-XLSX.writeFile(newWorkbook, './data/Granngarden AB 2019 Shipments Reprot.xlsx');
+XLSX.writeFile(newWorkbook, './data/Granngarden AB 2019 Shipments Report.xlsx');
