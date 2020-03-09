@@ -20,12 +20,19 @@ function addNewShipmentWithRevenue (shipment, lineInvoice) {
 }
 
 for (shipment of shipmentsJSON) {
-    for (lineInvoice of linesJSON) {
+    let foundLines = linesJSON.filter(line => line['Shipment ID'] === shipment.ID);
+    if (foundLines.length === 0) {
+        console.log(`No invoice lines found for shipment ${shipment.ID}!`);
+        break;
+    }
+
+    
+    /*for (lineInvoice of linesJSON) {
         if (shipment['ID'] === lineInvoice['Project ID']) {
             addNewProjectProfit(shipment, lineInvoice);
             break;
         }
-    }
+    }*/
 }
 
 let reportWorksheet = XLSX.utils.json_to_sheet(reportJSON, {
