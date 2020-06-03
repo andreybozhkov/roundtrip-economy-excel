@@ -7,11 +7,11 @@ let readOptions = {
     cellDates: false
 };
 
-let workbookCustomerReferences = XLSX.readFile('./data/initial/Holmen Paper/2019-11 and 12/edge_protectors_input.xlsx', readOptions);
+let workbookCustomerReferences = XLSX.readFile('./data/initial/Holmen Paper/edge_protectors_input.xlsx', readOptions);
 let customerRefsJSON = XLSX.utils.sheet_to_json(workbookCustomerReferences.Sheets['edge_protectors']);
-let workbookShipments = XLSX.readFile('./data/initial/Holmen Paper/2019-11 and 12/shipments.xlsx', readOptions);
+let workbookShipments = XLSX.readFile('./data/initial/Holmen Paper/shipments.xlsx', readOptions);
 let shipmentsJSON = XLSX.utils.sheet_to_json(workbookShipments.Sheets['shipments']);
-let workbookProjects = XLSX.readFile('./data/initial/Holmen Paper/2019-11 and 12/projects.xlsx', readOptions);
+let workbookProjects = XLSX.readFile('./data/initial/Holmen Paper/projects.xlsx', readOptions);
 let projectsJSON = XLSX.utils.sheet_to_json(workbookProjects.Sheets['projects']);
 let reportJSON = [];
 
