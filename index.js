@@ -7,9 +7,9 @@ let readOptions = {
     cellDates: false
 };
 
-let workbookImport = XLSX.readFile('./data/initial/Vitamin Well/import-projects-0.xls', readOptions);
+let workbookImport = XLSX.readFile('./data/initial/Vitamin Well/import-projects-0.xlsx', readOptions);
 let importJSON = XLSX.utils.sheet_to_json(workbookImport.Sheets['Import_clean']);
-let workbookExport = XLSX.readFile('./data/initial/Vitamin Well/export-projects-0.xls', readOptions);
+let workbookExport = XLSX.readFile('./data/initial/Vitamin Well/export-projects-0.xlsx', readOptions);
 let exportJSON = XLSX.utils.sheet_to_json(workbookExport.Sheets['Export_clean']);
 let reportJSON = [];
 
