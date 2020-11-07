@@ -18,7 +18,7 @@ let reportJSON = [];
 let errorLog = [];
 
 function findShipment (customerRef) {
-    let foundShipment = shipmentsJSON.find(shipment => shipment['Reference'] === customerRef);
+    let foundShipment = shipmentsJSON.find(shipment => shipment['Reference'].toString() === customerRef.toString());
     if (foundShipment === undefined) {
         let errorMsg = {
             'returnType': 'Error',
@@ -32,7 +32,7 @@ function findShipment (customerRef) {
 }
 
 function findProject (shipmentProjectID) {
-    let foundProject = projectsJSON.find(project => project.ID === shipmentProjectID);
+    let foundProject = projectsJSON.find(project => project.ID.toString() === shipmentProjectID.toString());
     if (foundProject === undefined) {
         let errorMsg = {
             'returnType': 'Error',
@@ -53,21 +53,22 @@ function addNewEdgeProtectorLine (customerRefLine, shipment, project) {
     newEdgeProtectorLine['Invoice nr'] = '';
     newEdgeProtectorLine['Credit Note nr'] = '';
     newEdgeProtectorLine['Project Status'] = project['Status'];
-    newEdgeProtectorLine['Replacement Project'] = 2044801;
+    newEdgeProtectorLine['Replacement Project'] = '';
     newEdgeProtectorLine['Notes'] = '';
     reportJSON.push(newEdgeProtectorLine);
+    //console.log(newEdgeProtectorLine);
 }
 
 for (customerRefLine of customerRefsJSON) {
     let foundShipment = findShipment(customerRefLine['Transport Booking']);
     if (foundShipment.returnType === 'Error') {
-        console.log(foundShipment);
+        //console.log(foundShipment);
         continue;
     }
 
     let foundProject = findProject(foundShipment['Project ID'])
     if (foundProject.returnType === 'Error') {
-        console.log(foundProject);
+        //console.log(foundProject);
         continue;
     }
     
