@@ -4,7 +4,7 @@
   "description": "Read excel, process data, read different excel based on criteria, process data, export to new excel",
   "main": "index.js",
   "dependencies": {
-    "xlsx": "^0.15.1"
+    "xlsx": "^0.17.0"
   },
   "devDependencies": {},
   "scripts": {
